@@ -1,0 +1,227 @@
+package project2;
+/* COMP90041_JavaProject2_SiyuChen_665696_09052016 */
+
+import java.util.Scanner;
+
+public class TicTacToe
+{
+	PlayerManager playerManager;
+	GameManager gameManager;	
+	Player playerA;
+	Player playerB;		
+	private int cell_constraint = 2;		
+	Scanner kbd = new Scanner(System.in);
+	
+	//MAIN METHOD TO START THE GAME
+	public static void main(String args[])
+	{
+		TicTacToe gameSystem = new TicTacToe();
+		gameSystem.run();
+	}
+	
+	//MAIN METHOD TO RUN THE GAME
+	public void run()
+	{
+		this.playerManager = new PlayerManager();
+		this.gameManager = new GameManager();
+		System.out.println("Welcome to Tic Tac Toe!");
+
+		getSyntaxinput();
+	}
+	
+	//THE METHOD TO GET USER INPUT, THIS WOULD BE CALLED AFTER EVERY END OF A METHOD
+	public void getSyntaxinput()
+	{
+		String syntaxInput;
+		String confirm;
+				
+		System.out.println();
+		System.out.print(">");
+		syntaxInput = kbd.nextLine();
+		
+		//USING SPLIT TO SEPERATE SYNTAX WITH OTHER INPUTS
+		//SYNTAX WOULD BE sectionInput[0], OTHER INPUTS WOULD BE sectionInput[1]
+		String sectionInput[] = syntaxInput.split(" ");
+		
+		switch (sectionInput[0])
+		{
+			case "exit":
+				System.out.println();
+				System.exit(0);
+				break;
+				
+			case "addplayer":	
+				//USE SPLIT TO SEPERATE sectionInput[1] INTO ARRAY name[] TO GET USERNAME
+				//USERNAME: name[0], FAMILY NAME: name[1], GIVEN NAME: name[2]
+				//CALL usernameCheck METHOD TO CHECK IF THE USERNAME HAS BEEN USED
+				//IF USERNAME HAS BEEN USED, RETURN TRUE
+				String name[] = sectionInput[1].split(",");
+				if(playerManager.usernameCheck(name[0]))
+				{
+					System.out.println("The username has been used already.");
+					getSyntaxinput();
+					break; 
+				}
+				playerManager.addPlayer(name[0], name[1], name[2]);
+				getSyntaxinput();
+				break;
+					
+			case "removeplayer":
+				//CHECK IF THE SYNTAX IS TO REMOVE SINGLE PLAYER OR REMOVE ALL PLAYER
+				//IF THE SYNTAX WISHES TO REMOVE ALL PLAYERS, 
+				//THERE WOULD BE NO INPUT AFTER SYNTAX SO THE LENGTH OF THE SYNTAX WOULD BE 1				
+				if (sectionInput.length == 1)
+				{
+					System.out.println
+					("Are you sure you want to remove all players? (y/n)");
+					 confirm = kbd.nextLine();
+					playerManager.removeAllplayer(confirm);
+					getSyntaxinput();
+				}
+				else
+				{
+					while (playerManager.usernameCheck(sectionInput[1]))
+					{											
+						playerManager.removePlayer(sectionInput[1]);
+						getSyntaxinput();
+					}					
+					System.out.println("The player does not exist.");					
+					getSyntaxinput();
+				}
+				break;
+				
+			case "editplayer":
+				//THIS IS THE SAME WITH addPlayer METHOD TO GET USERNAME
+				name = sectionInput[1].split(",");
+				while(playerManager.usernameCheck(name[0]))
+				{					
+					playerManager.editPlayer(name[0],name[1],name[2]);
+					getSyntaxinput();
+				}
+				System.out.println("The player does not exist.");					
+				getSyntaxinput();				
+				break;
+				
+			case "resetstats":
+				//THIS IS THE SAME WITH removeAllplayer METHOD TO GET CONFIRMATION
+				if (sectionInput.length == 1)
+				{
+					System.out.println
+					("Are you sure you want to reset all player statistics? (y/n)");
+					 confirm = kbd.nextLine();
+					playerManager.resetAllplayer(confirm);
+					getSyntaxinput();
+				}
+				else
+				{
+					while (playerManager.usernameCheck(sectionInput[1]))
+					{											
+						playerManager.resetPlayer(sectionInput[1]);
+						getSyntaxinput();
+					}
+					
+					System.out.println("The player does not exist.");					
+					getSyntaxinput();
+				}
+				break;
+				
+			case "playgame":
+				String player[];
+				//USE SPLIT TO GET TWO PLAYERS' USERNAMES
+				player = sectionInput[1].split(",");
+				
+				//USERNAMES ARE BOTH TRUE SO THEY'RE ALL VALID PLAYERS, START THE GAME
+				if(((playerManager.usernameCheck(player[0])) 
+						&&	(playerManager.usernameCheck(player[1]))) == true)					
+				{	
+					//USE USERNAME TO FIND THE EXISTED Player IN ALL THE PLAYERS
+					playerA = playerManager.findPlayer(player[0]);
+					playerB = playerManager.findPlayer(player[1]);
+					
+					//TINITIALISE THE GRID
+					gameManager.resetGrid();
+					gameManager.printGrid();
+					
+					//GET MOVE FROM INPUT AND PLAY THE GAME
+					getMoveinput();
+					getSyntaxinput();						
+				}
+				else
+				{
+					System.out.println("Player does not exist.");					
+					getSyntaxinput();	
+				}
+				break;
+				
+			case "displayplayer":
+				//SAME AS removeplayer TO CHECK WHETHER TO DISPLAY A SINGLE PLAYER OR ALL PLAYERS			
+				if (sectionInput.length == 1)
+				{
+					playerManager.displayAllplayer();
+					getSyntaxinput();
+				}
+				else
+				{
+					while (playerManager.usernameCheck(sectionInput[1]))
+					{											
+						playerManager.displayPlayer(sectionInput[1]);
+						getSyntaxinput();
+					}					
+					System.out.println("The player does not exist.");					
+					getSyntaxinput();
+				}
+				break;
+				
+			//DISPLAY RANKINGS OF PLAYERS	
+			case "rankings":
+				playerManager.displayRanking();
+				getSyntaxinput();
+				break;				
+		}				
+	}
+	
+	public void getMoveinput()
+	{
+		//STATE 4 INDICATES THE GAME CONTINUES, NO RESULTS YET
+		//IF THE GAME GOT A RESULT(1,2,3), THERE WOULD BE NO FURTHER MOVE INPUT
+		if ((gameManager.getGameState(playerA, playerB))==4)
+		{
+			gameManager.playGame(playerA, playerB);
+			
+			//READ INPUT OF THE NEXT MOVE
+			String move;
+			move = kbd.nextLine();
+			String sectionMove[] = move.split(" ");
+			int row = Integer.parseInt(sectionMove[0]);
+			int col = Integer.parseInt(sectionMove[1]);
+			
+			//MOVE CHECK-CONSTRAINT, ENTER AGAIN	
+			if (((row > cell_constraint) || (col > cell_constraint)) == true)
+			{
+				System.out.println
+				("Invalid move. You must place at a cell within {0,1,2} {0,1,2}.");
+				
+				//THE RE-INPUT HAS TO BE FROM THE SAME PLAYER, 
+				//SO GET BACK TO THE LAST COUNTER TO GET THE CORRECT PROMPT
+				gameManager.counter --;				
+				getMoveinput();	
+			}		
+			else
+			{
+			//MOVE CHECK-OCCUPIED, IF NOT OCCUPIED, PLACE THE PIECE	
+				if((gameManager.checkMove(row, col))==true)
+				{
+					gameManager.piecePlace(row, col, playerA, playerB);						
+					getMoveinput();
+				}
+				else
+				{
+					System.out.println("Invalid move. The cell has been occupied.");				
+					gameManager.counter --;
+					getMoveinput();
+				}
+			}
+		}
+	}									
+}
+
