@@ -1,0 +1,155 @@
+package project2;
+/* COMP90041_JavaProject2_SiyuChen_665696_09052016 */
+
+import java.util.Comparator;
+
+public class Player
+{
+	public String username;
+	private String family_name;
+	private String given_name;
+	
+	private int games_played;
+	private int games_won;
+	private int games_drawn;	
+		
+//Constructors	
+	public Player(String username, String family_name, String given_name)
+	{
+		this.username = username;
+		this.family_name = family_name;
+		this.given_name = given_name;
+		
+		this.games_played = 0;
+		this.games_won = 0;
+		this.games_drawn = 0;
+	}	
+	public Player()
+	{
+		this.games_played = 0;
+		this.games_won = 0;
+		this.games_drawn = 0;		
+	}
+
+//Accessors and Mutators
+	public String getUsername() 
+	{
+		return username;
+	}
+	public void setUsername(String username) 
+	{
+		this.username = username;		
+	}
+	
+	public String getFamily_name()
+	{
+		return family_name;
+	}
+	public void setFamily_name(String family_name)
+	{
+		this.family_name = family_name;
+	}
+	
+	public String getGiven_name() 
+	{
+		return given_name;
+	}
+	public void setGiven_name(String given_name) 
+	{
+		this.given_name = given_name;
+	}
+	
+	public int getGames_played() {
+		return games_played;
+	}
+	public void setGames_played(int games_played) {
+		this.games_played = games_played;
+	}
+	
+	public int getGames_won() {
+		return games_won;
+	}
+	public void setGames_won(int games_won) {
+		this.games_won = games_won;
+	}
+	
+	public int getGames_drawn() {
+		return games_drawn;
+	}
+	public void setGames_drawn(int games_drawn) {
+		this.games_drawn = games_drawn;
+	}
+
+	public void won()
+	{
+		this.games_played++;
+		this.games_won++;
+	}
+	
+	public void drawn()
+	{
+		this.games_played++;
+		this.games_drawn++;
+	}
+	public void played()
+	{
+		this.games_played++;		
+	}
+	
+	//RETURN THE WIN_RATIO NUMBER BEFORE %
+	public float getRatiowin()
+	{
+		int win = getGames_won();
+		int play = getGames_played();		
+		float ratioWin;
+		
+		if (play == 0)
+			ratioWin = 0;	
+		else
+			ratioWin = ((float)win/(float)play)*100;
+		
+		return ratioWin;		
+	}
+	
+	//RETURN THE DRAW_RATIO NUMBER BEFORE %
+	public float getRatiodraw()
+	{		
+		int draw = getGames_drawn();
+		int play = getGames_played();
+		float ratioDraw;
+		
+		if (play == 0)
+			ratioDraw = 0;
+		else
+			ratioDraw = ((float)draw / (float)play)*100;
+		
+		return ratioDraw;		
+	}			
+}
+
+//USE IMPLEMENTATION TO OVERRIDE A NEW COMPARATOR
+//THE CRITERIA OF THE NEW COMPARATOR IS SORTING WIN_RATIO, 
+//THEN DRAW_RATIO, THEN USERNAME ALPHABET ORDER
+class PlayerComparator implements Comparator<Player>
+{
+	@Override
+	public int compare(Player playerA, Player playerB)
+	{
+		//IF THERE IS NULL VALUE IN THE ARRAY, Arrays.sort CAN NOT FUNCTION
+		if ((playerA == null) || (playerB == null)) 
+			return 0;		
+		
+		//IF playerB'S RATIO IS GREATER THAN playerA'S RATIO, RETURN 1, OTHERWISE RETURN -1 
+		int i = Float.compare(playerB.getRatiowin(), playerA.getRatiowin());
+		if(i != 0) 
+			return i;
+		
+		//IF THERE TWO PLAYERS' RATIOS ARE SAME, GO TO THE NEXT if
+		i = Float.compare(playerB.getGames_drawn(), playerA.getGames_drawn());
+		if(i != 0) 
+			return i;
+		
+		//THE COMPARISION OF STRING IN ALPHABET ORDER IS OPPOSITE TO COMPARISION OF NUMBERS
+		return playerA.getUsername().compareTo(playerB.getUsername());
+	}
+}
