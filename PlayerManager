@@ -1,0 +1,200 @@
+package project2;
+/* COMP90041_JavaProject2_SiyuChen_665696_09052016 */
+
+import java.util.Arrays;
+
+public class PlayerManager
+{
+	Player[] playerList = new Player[100];
+	Player[] rankingList = new Player [100];
+	Player[] rankingDisplaylist = new Player [10];
+	Player player = new Player();
+	private int count = 0;
+	private int ranking_constraint = 10;	
+		
+	//CHECK DUPILICATED USERNAME THROUGH USER LIST ARRAY, EXISTED USERNAME/PLAYER RETURNS TRUE
+	public boolean usernameCheck(String username)
+	{
+		for (int i = 0; i<count; i++)
+		{
+			if(playerList[i].getUsername().equals(username))
+				return true;	
+		}
+		return false;		
+	}
+
+	//ADD NEW PLAYERS INTO PLAYER ARRAY, NUMBER OF PLAYERS + 1
+	public void addPlayer(String username, String family_name, String given_name)
+	{
+		Player thisplayer = new Player(username,family_name,given_name);
+		playerList[count] = thisplayer;
+		count++;
+	}	
+
+	//REMOVE A SINGLE PLAYER USING USERNAME 
+	public void removePlayer(String username)
+	{
+		int i = 0;
+		for (i = 0; i<count; i++)
+		{
+			if(playerList[i].getUsername().equals(username))
+				break;
+		}
+		for(int j = i; j<count; j++)
+		{
+			playerList[j] = playerList[j+1];
+		}
+		//CLEAR THE POSITION IN THE ARRAY OF THE REMOVED PLAYER 
+		//NUMBER OF PLAYER - 1
+		playerList[count-1] = null;
+		count--;
+	}
+
+	//REMOVE ALL PLAYERS AND SET THE ARRAY TO A NEW PLAYER ARRAY
+	public void removeAllplayer(String confirm)
+	{
+		switch(confirm)
+		{
+		case "y":
+			playerList = new Player[100];
+			count = 0;
+			break;
+		case"n":			
+			break;
+		}		
+	}
+
+	//EDIT A PLAYER WITH NEW INPUT
+	public void editPlayer(String username, String new_family_name, String new_given_name)
+	{
+		int i = 0;
+		for (i = 0; i<count; i++)
+		{
+			if(playerList[i].getUsername().equals(username))
+				break;
+		}
+		playerList[i].setFamily_name(new_family_name);
+		playerList[i].setGiven_name(new_given_name);		
+	}
+
+	//FIND A PLAYER FROM PLAYER LIST ARRAY
+	public Player findPlayer(String username)
+	{
+		int i = 0;
+		for (i = 0; i<count; i++)
+		{
+			if(playerList[i].getUsername().equals(username))
+				break;
+		}
+		return playerList[i];
+	}
+
+	//DISPLAY A PLAYER WITH THE PLAYER'S INFORMATION USING USERNAME INPUT
+	public void displayPlayer(String username)
+	{
+		int i = 0;
+		for (i = 0; i<count; i++)
+		{
+			if(playerList[i].getUsername().equals(username))
+				break;
+		}
+		System.out.println(
+				playerList[i].getUsername()+","
+				+playerList[i].getFamily_name()+","
+				+playerList[i].getGiven_name()+","
+				+playerList[i].getGames_played()+" games,"
+				+playerList[i].getGames_won()+" wins,"
+				+playerList[i].getGames_drawn()+" draws");
+		
+	}
+
+	//DISPLAY ALL PLAYERS'S INFORMATION
+	public void displayAllplayer()
+	{
+		int i;
+		int j;
+		String[] playerDisplaylist = new String [count];
+		
+		//GET A NEW ARRAY TO STORE THE USER'S USERNAME FOR SORTING
+		for(i = 0; i < count; i++)
+		{
+			playerDisplaylist[i] = playerList[i].getUsername();	
+		}
+		
+		//SORT THE USERNAME IN ALPHABET ORDER
+		Arrays.sort(playerDisplaylist,String.CASE_INSENSITIVE_ORDER);			
+		
+		//USING SORTED USERNAME ARRAY TO GET USERS FROM PLAYERLIST
+		for(i = 0; i < count; i++)
+		{
+			for(j = 0; j < count; j++)
+			{
+				if (playerDisplaylist[i].equals(playerList[j].getUsername()))
+				{
+					System.out.println(
+							playerList[j].getUsername()+","
+							+playerList[j].getFamily_name()+","
+							+playerList[j].getGiven_name()+","
+							+playerList[j].getGames_played()+" games,"
+							+playerList[j].getGames_won()+" wins,"
+							+playerList[j].getGames_drawn()+" draws");
+				}
+			}
+		}		
+	}
+
+	//RESET PLAYER'S STATSTICS BY PUTTING 0 INTO ALL SETTERS
+	public void resetPlayer(String username)
+	{
+		int i = 0;
+		for (i = 0; i<count; i++)
+		{
+			if(playerList[i].getUsername().equals(username))
+				break;
+		}
+		playerList[i].setGames_played(0);
+		playerList[i].setGames_won(0);
+		playerList[i].setGames_drawn(0);
+	}
+
+	//RESET ALL PLAYERS' STATISTICS
+	public void resetAllplayer(String confirm)
+	{
+		int i = 0;
+		for(i = 0; i < count; i++)
+		{
+			playerList[i].setGames_played(0);
+			playerList[i].setGames_won(0);
+			playerList[i].setGames_drawn(0);
+		}
+	}
+
+	//DISPLAY RANKING ACCORDING TO WIN_RATIO, DRAW_RATIO, USERNAME ALPHABET ORDER
+	public void displayRanking()
+	{
+		//USE A NEW ARRAY TO STORE THE PLAYERS FOR SORTING
+		for(int i = 0; i < count; i++)
+		{
+			rankingList[i] = playerList[i];	
+		}
+		
+		//USE A OVERRIDE COMPARATOR TO SORT THE RANKING LIST
+		Arrays.sort(rankingList, new PlayerComparator());		
+		System.out.println(" WIN  | DRAW | GAME | USERNAME");
+		
+		//USE A NEW ARRAY TO STORE AND DISPLAY TOP 10 PLAYERS
+		for(int i = 0; i < ranking_constraint; i++)
+		{
+			rankingDisplaylist[i] = rankingList[i];
+		}
+		
+		//DISPLAY THE RANKINGLIST WITH FORMAT PRINT
+		for(int i = 0; i < count; i++)
+		{			
+			System.out.printf("%4.0f%% |", rankingDisplaylist[i].getRatiowin());
+			System.out.printf("%4.0f%% |", rankingDisplaylist[i].getRatiodraw());
+			System.out.printf("%3d   | ", rankingDisplaylist[i].getGames_played());
+			System.out.println(rankingDisplaylist[i].getUsername());			
+		}		
+	}
+}	
