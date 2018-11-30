@@ -1,0 +1,150 @@
+package project2;
+/* COMP90041_JavaProject2_SiyuChen_665696_09052016 */
+public class GameManager
+{
+	public int counter = 1;
+	private String position[][] = {{" ", " ", " "}, {" ", " ", " "}, {" ", " ", " "}};	
+	private int cell_constraint = 2;
+
+	//RESET THE GRID TO INITIALISED STATE
+	public void resetGrid()
+	{
+		for (int i = 0; i <= cell_constraint; i++)
+		{
+			for (int j = 0; j <= cell_constraint; j++)
+			{
+				position[i][j] = " ";
+			}
+		}
+		counter = 1;
+	}
+	
+	//PLACE THE PIECE INTO THE GRID BY REPLACING THE BLANK SPACE WITH X OR O
+	public void piecePlace(int row, int col, Player playerA, Player playerB)	
+	{
+		//USE PARITY TO INDICATE WHO SHOULD MAKE THE MOVE
+		//AS THE INISIALISATION OF COUNTER IS 1, PLAYER A MAKES MOVE FIRST WITH "X"
+		if (counter%2 == 1)
+			position[row][col] = "X";
+		else
+			position[row][col] = "O";
+
+		printGrid();
+		
+		//CHECK IF THE GAME HAS A RESULT, IF GAME HAS A RESULT, A PROMPT SHOULD DISPLAY
+		switch(getGameState(playerA, playerB))
+		{
+			case 1:
+			{
+				System.out.println("Game over. " + playerA.getGiven_name() + " won!");
+				playerA.won();
+				playerB.played();
+				break;
+			}
+				
+			case 2:
+			{
+				System.out.println("Game over. " + playerB.getGiven_name() + " won!");				
+				playerB.won();
+				playerA.played();
+				break;
+			}
+				
+			case 3:
+			{
+				System.out.println("Game over. It was a draw!");
+				playerA.drawn();
+				playerB.drawn();
+				break;
+			}
+		}
+	}
+	
+	//SHOW PROMPT FOR THE MOVE
+	public void playGame(Player playerA, Player playerB)
+	{			
+		if(counter%2 ==1)
+			{
+				System.out.println(playerA.getGiven_name() + "'s move:");				
+			}
+			else
+			{
+				System.out.println(playerB.getGiven_name() + "'s move:");				
+			}
+			counter ++;
+	}
+	
+	//CHECK IF THE MOVE IS VALID 
+	//BY CHECKING THE CONTENT OF A CERTAIN POSITION IN THE position[][] ARRAY
+	//NULL RETURNS TRUE, DUPLICATED POSITION RETURNS FALSE		
+	public boolean checkMove(int row, int col)
+	{
+		if(position[row][col]== " ")
+			return true;
+		else
+		{			
+			return false;
+		}
+	}
+	
+	//PRINT THE STATE OF THE GRID
+	public void printGrid()
+	{				
+		System.out.println(
+				position[0][0] + "|" +
+				position[0][1] + "|" +
+				position[0][2]);			
+		System.out.println("-----");		
+		
+		System.out.println(
+				position[1][0] + "|" +
+				position[1][1] + "|" +
+				position[1][2]);				
+		System.out.println("-----");
+						
+		System.out.println(
+				position[2][0] + "|" +
+				position[2][1] + "|" +
+				position[2][2]);		
+	}
+
+	//RETURN THE CURRENT STATE OF THE GAME AFTER PLAYER'S MOVE
+	public int getGameState(Player playerA, Player playerB)
+	{
+		// PLAYER A WINS
+		if((position[0][0].equals("O") && position[0][1].equals("O") && position[0][2].equals("O")) ||
+				(position[1][0].equals("O") && position[1][1].equals("O") && position[1][2].equals("O")) ||	
+				(position[2][0].equals("O") && position[2][1].equals("O") && position[2][2].equals("O")) ||
+				(position[0][0].equals("O") && position[1][0].equals("O") && position[2][0].equals("O")) ||
+				(position[0][1].equals("O") && position[1][1].equals("O") && position[2][1].equals("O")) ||
+				(position[0][2].equals("O") && position[1][2].equals("O") && position[2][2].equals("O")) ||
+				(position[0][0].equals("O") && position[1][1].equals("O") && position[2][2].equals("O")) ||
+				(position[2][0].equals("O") && position[1][1].equals("O") && position[0][2].equals("O")) )		
+			return 1; 
+		
+		// PLAYER B WINS
+		else if((position[0][0].equals("X") && position[0][1].equals("X") && position[0][2].equals("X")) ||
+				(position[1][0].equals("X") && position[1][1].equals("X") && position[1][2].equals("X")) ||	
+				(position[2][0].equals("X") && position[2][1].equals("X") && position[2][2].equals("X")) ||
+				(position[0][0].equals("X") && position[1][0].equals("X") && position[2][0].equals("X")) ||
+				(position[0][1].equals("X") && position[1][1].equals("X") && position[2][1].equals("X")) ||
+				(position[0][2].equals("X") && position[1][2].equals("X") && position[2][2].equals("X")) ||
+				(position[0][0].equals("X") && position[1][1].equals("X") && position[2][2].equals("X")) ||
+				(position[2][0].equals("X") && position[1][1].equals("X") && position[0][2].equals("X")) )		
+			return 2; 
+		
+		//GAME CONTINUES
+		for(int row_check=0; row_check<3 ;row_check++)
+		{
+			for(int col_check=0 ;col_check<3; col_check++)
+			{
+				if(position[row_check][col_check].equals(" "))				
+					return 4;						
+			}
+		}
+			//GAME DRAWS
+			return 3; 						
+	}
+}
+	
+	
