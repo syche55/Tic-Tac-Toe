@@ -27,5 +27,3 @@ Game play:
      (Note: Here a player’s move is represented by two integers in the range of {0, 1, 2} × {0, 1, 2}, where “0 0” represents
       the top-left cell and “2 2” represents the bottom-right cell.)
   3. Exit the game: exit   
-  
-This is an individual university course project.
