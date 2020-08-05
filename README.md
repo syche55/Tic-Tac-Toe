@@ -1,4 +1,4 @@
-# JavaUniProj
+# Tic Tac Toe
 The objective of this project is to design and implement the game of Tic Tac Toe using Java. It is a two player game, and the rules are as follows:
   1. The game begins with an empty, 3 × 3 grid.
   2. The two players then take turns placing a mark in an empty grid cell. Player O will use the ‘O’ (letter ‘O’, not zero)        mark and Player X will use the ‘X’ mark.
@@ -8,7 +8,7 @@ The objective of this project is to design and implement the game of Tic Tac Toe
 
 In this game we can add players (up to 100) by username, family name and given name, remove one or all players, modify the name of a player, reset the statistics of one or all players, display the information of one or all players, and rank the players based on winning history.
 
-Command syntax:
+# Command syntax:
 Player management: 
   1. Add a player: addplayer username,family_name,given_name
   2. Remove a player: removeplayer [username]
